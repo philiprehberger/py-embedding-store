@@ -146,3 +146,71 @@ def test_save_and_load(tmp_path):
 def test_search_result_repr():
     r = SearchResult(id="test", score=0.9876, metadata={})
     assert "0.9876" in repr(r)
+
+
+# --- New tests for v0.2.0 ---
+
+
+def test_len():
+    store = VectorStore()
+    assert len(store) == 0
+    store.add("a", [1.0, 0.0])
+    assert len(store) == 1
+
+
+def test_contains():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0])
+    assert "a" in store
+    assert "b" not in store
+
+
+def test_invalid_dimensions():
+    with pytest.raises(ValueError, match="positive"):
+        VectorStore(dimensions=0)
+    with pytest.raises(ValueError, match="positive"):
+        VectorStore(dimensions=-1)
+
+
+def test_id_overwrite():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0], {"version": 1})
+    store.add("a", [0.0, 1.0], {"version": 2})
+    assert store.size == 1
+    assert store.get("a").metadata["version"] == 2
+
+
+def test_search_unknown_metric():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0])
+    with pytest.raises(ValueError, match="Unknown metric"):
+        store.search([1.0, 0.0], metric="euclidean")
+
+
+def test_search_all_filtered_out():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0], {"type": "bad"})
+    results = store.search([1.0, 0.0], filter=lambda m: m.get("type") == "good")
+    assert results == []
+
+
+def test_add_many_without_metadata():
+    store = VectorStore()
+    store.add_many([("a", [1.0, 0.0]), ("b", [0.0, 1.0])])
+    assert store.size == 2
+    assert store.get("a").metadata == {}
+
+
+def test_search_top_k_limits_results():
+    store = VectorStore()
+    for i in range(10):
+        store.add(f"v{i}", [float(i), 0.0])
+    results = store.search([5.0, 0.0], top_k=3)
+    assert len(results) == 3
+
+
+def test_clear_resets_dimensions():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0, 0.0])
+    store.clear()
+    assert store.size == 0
