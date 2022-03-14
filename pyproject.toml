@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "philiprehberger-embedding-store"
-version = "0.2.0"
+version = "0.2.1"
 description = "In-memory vector store with cosine similarity search"
 readme = "README.md"
 license = "MIT"
@@ -25,3 +25,9 @@ Changelog = "https://github.com/philiprehberger/py-embedding-store/blob/main/CHA
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/philiprehberger_embedding_store"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+strict = true
