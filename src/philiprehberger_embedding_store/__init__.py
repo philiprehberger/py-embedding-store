@@ -39,6 +39,8 @@ class VectorStore:
     """
 
     def __init__(self, dimensions: int | None = None) -> None:
+        if dimensions is not None and dimensions <= 0:
+            raise ValueError("dimensions must be positive")
         self._dimensions = dimensions
         self._entries: dict[str, _Entry] = {}
 
@@ -212,3 +214,11 @@ class VectorStore:
     def ids(self) -> list[str]:
         """Get all entry IDs."""
         return list(self._entries.keys())
+
+    def __len__(self) -> int:
+        """Return the number of entries."""
+        return len(self._entries)
+
+    def __contains__(self, id: str) -> bool:
+        """Check if an ID exists in the store."""
+        return id in self._entries
