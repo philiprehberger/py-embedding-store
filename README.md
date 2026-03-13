@@ -52,6 +52,9 @@ store.add_many([("id1", emb1, meta1), ("id2", emb2, meta2)])
 | `VectorStore.load(path)` | Load from JSON |
 | `clear()` | Remove all entries |
 | `ids()` | List all IDs |
+| `len(store)` | Number of entries |
+| `id in store` | Check if ID exists |
+| `store.size` | Number of entries (property) |
 
 ## Distance Metrics
 

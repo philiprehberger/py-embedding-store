@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+- Add `__len__()` and `__contains__()` for Pythonic usage (`len(store)`, `id in store`)
+- Validate dimensions must be positive in constructor
+- Expand test suite with edge case tests (27 total)
+
 ## 0.1.1
 
 - Add project URLs to pyproject.toml
