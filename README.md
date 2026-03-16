@@ -58,6 +58,14 @@ store.add_many([("id1", emb1, meta1), ("id2", emb2, meta2)])
 - `"cosine"` (default) — cosine similarity
 - `"dot"` — dot product
 
+
+## Development
+
+```bash
+pip install -e .
+python -m pytest tests/ -v
+```
+
 ## License
 
 MIT
