@@ -2,7 +2,7 @@
 
 In-memory vector store with cosine similarity search.
 
-## Install
+## Installation
 
 ```bash
 pip install philiprehberger-embedding-store

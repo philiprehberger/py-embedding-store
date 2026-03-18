@@ -10,12 +10,25 @@ readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [{ name = "Philip Rehberger" }]
+keywords = ["embedding", "vector-store", "similarity", "cosine", "search"]
 dependencies = ["numpy>=1.24"]
 classifiers = [
-    "Programming Language :: Python :: 3",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Typing :: Typed",
 ]
+
+[project.urls]
+Homepage = "https://github.com/philiprehberger/py-embedding-store#readme"
+Repository = "https://github.com/philiprehberger/py-embedding-store"
+Issues = "https://github.com/philiprehberger/py-embedding-store/issues"
+Changelog = "https://github.com/philiprehberger/py-embedding-store/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/philiprehberger_embedding_store"]
