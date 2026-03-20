@@ -1,8 +1,12 @@
 # philiprehberger-embedding-store
 
+[![Tests](https://github.com/philiprehberger/py-embedding-store/actions/workflows/publish.yml/badge.svg)](https://github.com/philiprehberger/py-embedding-store/actions/workflows/publish.yml)
+[![PyPI version](https://img.shields.io/pypi/v/philiprehberger-embedding-store.svg)](https://pypi.org/project/philiprehberger-embedding-store/)
+[![License](https://img.shields.io/github/license/philiprehberger/py-embedding-store)](LICENSE)
+
 In-memory vector store with cosine similarity search.
 
-## Install
+## Installation
 
 ```bash
 pip install philiprehberger-embedding-store
@@ -38,10 +42,16 @@ loaded = VectorStore.load("vectors.json")
 store.add_many([("id1", emb1, meta1), ("id2", emb2, meta2)])
 ```
 
+### Distance metrics
+
+- `"cosine"` (default) — cosine similarity
+- `"dot"` — dot product
+
 ## API
 
-| Method | Description |
-|--------|-------------|
+| Function / Class | Description |
+|------------------|-------------|
+| `VectorStore(dimensions)` | Create a new vector store with the given dimensionality |
 | `add(id, embedding, metadata?)` | Add a vector |
 | `add_many(items)` | Batch add |
 | `search(query, top_k?, metric?, filter?, min_score?)` | Similarity search |
@@ -56,10 +66,12 @@ store.add_many([("id1", emb1, meta1), ("id2", emb2, meta2)])
 | `id in store` | Check if ID exists |
 | `store.size` | Number of entries (property) |
 
-## Distance Metrics
+## Development
 
-- `"cosine"` (default) — cosine similarity
-- `"dot"` — dot product
+```bash
+pip install -e .
+python -m pytest tests/ -v
+```
 
 ## License
 
