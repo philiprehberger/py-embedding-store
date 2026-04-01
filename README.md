@@ -41,10 +41,16 @@ loaded = VectorStore.load("vectors.json")
 store.add_many([("id1", emb1, meta1), ("id2", emb2, meta2)])
 ```
 
+### Distance metrics
+
+- `"cosine"` (default) — cosine similarity
+- `"dot"` — dot product
+
 ## API
 
-| Method | Description |
-|--------|-------------|
+| Function / Class | Description |
+|------------------|-------------|
+| `VectorStore(dimensions)` | Create a new vector store with the given dimensionality |
 | `add(id, embedding, metadata?)` | Add a vector |
 | `add_many(items)` | Batch add |
 | `search(query, top_k?, metric?, filter?, min_score?)` | Similarity search |
@@ -55,11 +61,9 @@ store.add_many([("id1", emb1, meta1), ("id2", emb2, meta2)])
 | `VectorStore.load(path)` | Load from JSON |
 | `clear()` | Remove all entries |
 | `ids()` | List all IDs |
-
-## Distance Metrics
-
-- `"cosine"` (default) — cosine similarity
-- `"dot"` — dot product
+| `len(store)` | Number of entries |
+| `id in store` | Check if ID exists |
+| `store.size` | Number of entries (property) |
 
 ## Development
 
