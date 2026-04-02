@@ -1,4 +1,15 @@
 # Changelog
+
+## 0.3.0 (2026-04-01)
+
+- Add euclidean and manhattan distance metrics alongside cosine and dot product
+- Add store-level `metric` parameter to set default distance metric per store
+- Add `search_many()` for batch similarity search across multiple query vectors
+- Add `remove()` method as alias for `delete()`
+- Add metric persistence in `save()` / `load()` JSON format
+- Add metadata filtering examples and multi-condition filter support
+- Expand test suite with comprehensive coverage for all metrics and new methods
+
 ## 0.2.2
 
 - Add keywords, fix classifiers, standardize README structure

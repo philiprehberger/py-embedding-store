@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "philiprehberger-embedding-store"
-version = "0.2.2"
-description = "In-memory vector store with cosine similarity search"
+version = "0.3.0"
+description = "In-memory vector store with multi-metric similarity search."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [{ name = "Philip Rehberger" }]
-keywords = ["embedding", "vector-store", "similarity", "cosine", "search"]
+keywords = ["embedding", "vector-store", "similarity", "search", "distance-metrics"]
 dependencies = ["numpy>=1.24"]
 classifiers = [
     "Development Status :: 3 - Alpha",
