@@ -112,6 +112,29 @@ store.remove("a")      # Remove by ID
 store.clear()           # Remove all entries
 ```
 
+### Updating and clearing
+
+```python
+from philiprehberger_embedding_store import VectorStore
+
+store = VectorStore(dimensions=3)
+store.add("a", [1.0, 0.0, 0.0], {"version": 1})
+
+# Replace the vector in place
+store.update("a", vector=[0.0, 1.0, 0.0])
+
+# Replace the metadata (wholesale)
+store.update("a", metadata={"version": 2})
+
+# Update both at once
+store.update("a", vector=[0.0, 0.0, 1.0], metadata={"version": 3})
+
+# Remove everything but keep the dimensionality (3) and metric configuration
+store.clear()
+assert len(store) == 0
+store.add("b", [0.1, 0.2, 0.3])  # still constrained to 3 dimensions
+```
+
 ## API
 
 | Function / Class | Description |
@@ -125,9 +148,10 @@ store.clear()           # Remove all entries
 | `delete(id)` | Delete entry by ID |
 | `remove(id)` | Remove entry by ID (alias for delete) |
 | `update_metadata(id, metadata)` | Update metadata for an entry |
+| `update(id, vector=None, metadata=None)` | Replace an entry's vector and/or metadata in place |
 | `save(path)` | Save store to JSON file |
 | `VectorStore.load(path)` | Load store from JSON file |
-| `clear()` | Remove all entries |
+| `clear()` | Remove all entries (preserves dimensionality and metric) |
 | `ids()` | List all stored IDs |
 | `len(store)` | Number of entries |
 | `id in store` | Check if ID exists |

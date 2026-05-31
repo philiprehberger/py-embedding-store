@@ -145,6 +145,38 @@ class VectorStore:
             return True
         return False
 
+    def update(
+        self,
+        id: str,
+        vector: list[float] | None = None,
+        metadata: dict[str, Any] | None = None,
+    ) -> None:
+        """Update an existing entry's vector and/or metadata.
+
+        Args:
+            id: The id of the entry to update.
+            vector: New vector. Pass None to keep existing.
+            metadata: New metadata. Pass None to keep existing.
+
+        Raises:
+            KeyError: If *id* is not present in the store.
+            ValueError: If the new vector's dimensionality does not match the store.
+        """
+        entry = self._entries.get(id)
+        if entry is None:
+            raise KeyError(id)
+
+        if vector is not None:
+            vec = np.asarray(vector, dtype=np.float32)
+            if self._dimensions is not None and len(vec) != self._dimensions:
+                raise ValueError(
+                    f"Expected {self._dimensions} dimensions, got {len(vec)}"
+                )
+            entry.embedding = vec
+
+        if metadata is not None:
+            entry.metadata = metadata
+
     def search(
         self,
         query_embedding: list[float] | np.ndarray,
@@ -305,7 +337,7 @@ class VectorStore:
         return store
 
     def clear(self) -> None:
-        """Remove all entries."""
+        """Remove all entries; preserves the store's dimensionality and metric configuration."""
         self._entries.clear()
 
     def ids(self) -> list[str]:

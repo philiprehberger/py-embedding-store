@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0 (2026-05-30)
+
+- Add `VectorStore.update()` to modify an existing entry's vector or metadata in place
+- Add `VectorStore.clear()` to remove all entries (preserving dimensionality and metric)
+
 ## 0.3.0 (2026-04-01)
 
 - Add euclidean and manhattan distance metrics alongside cosine and dot product

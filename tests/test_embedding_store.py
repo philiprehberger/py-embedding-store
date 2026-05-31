@@ -478,3 +478,122 @@ def test_roundtrip_search_after_load(tmp_path):
     loaded = VectorStore.load(path)
     results = loaded.search([1.0, 0.0], top_k=1)
     assert results[0].id == "a"
+
+
+# --- update() ---
+
+
+def test_update_replaces_vector():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0], {"label": "orig"})
+    store.add("b", [0.0, 1.0])
+
+    # Replace "a"'s vector to point in the opposite direction
+    store.update("a", vector=[0.0, 1.0])
+
+    # Searching for [0.0, 1.0] should now bring "a" to the top with a
+    # near-perfect score (tied with "b" but both should have score ~1.0).
+    results = store.search([0.0, 1.0], top_k=2)
+    top_ids = {r.id for r in results[:2]}
+    assert "a" in top_ids
+    a_result = next(r for r in results if r.id == "a")
+    assert a_result.score == pytest.approx(1.0)
+
+
+def test_update_replaces_metadata():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0], {"old": "data"})
+
+    store.update("a", metadata={"new": "data"})
+
+    entry = store.get("a")
+    assert entry.metadata == {"new": "data"}
+    assert "old" not in entry.metadata
+
+
+def test_update_metadata_visible_via_search():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0], {"old": "data"})
+
+    store.update("a", metadata={"version": 2})
+
+    results = store.search([1.0, 0.0], top_k=1)
+    assert results[0].id == "a"
+    assert results[0].metadata == {"version": 2}
+
+
+def test_update_both_vector_and_metadata():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0], {"v": 1})
+
+    store.update("a", vector=[0.0, 1.0], metadata={"v": 2})
+
+    entry = store.get("a")
+    assert entry.metadata == {"v": 2}
+    results = store.search([0.0, 1.0], top_k=1)
+    assert results[0].id == "a"
+    assert results[0].score == pytest.approx(1.0)
+
+
+def test_update_missing_id_raises_key_error():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0])
+    with pytest.raises(KeyError):
+        store.update("nonexistent", vector=[0.0, 1.0])
+
+
+def test_update_wrong_dimensionality_raises_value_error():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0])
+    with pytest.raises(ValueError):
+        store.update("a", vector=[1.0])
+
+
+def test_update_no_args_is_noop():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0], {"k": "v"})
+
+    store.update("a")
+
+    entry = store.get("a")
+    assert entry.metadata == {"k": "v"}
+    assert list(entry.embedding) == pytest.approx([1.0, 0.0])
+
+
+# --- clear() preserves dimensionality ---
+
+
+def test_clear_empties_store_and_search_returns_empty():
+    store = VectorStore(dimensions=3)
+    store.add("a", [1.0, 0.0, 0.0])
+    store.add("b", [0.0, 1.0, 0.0])
+
+    store.clear()
+
+    assert len(store) == 0
+    assert store.search([1.0, 0.0, 0.0]) == []
+
+
+def test_clear_preserves_dimensionality_and_metric():
+    store = VectorStore(dimensions=3, metric="euclidean")
+    store.add("a", [1.0, 0.0, 0.0])
+
+    store.clear()
+
+    assert store.dimensions == 3
+    assert store.metric == "euclidean"
+
+    # Adding new entries still works and the dim constraint is enforced
+    store.add("b", [0.0, 1.0, 0.0])
+    assert len(store) == 1
+    with pytest.raises(ValueError):
+        store.add("c", [1.0, 0.0])
+
+
+def test_clear_then_add_works():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0, 0.0])
+    store.clear()
+    store.add("b", [0.5, 0.5, 0.5])
+    assert len(store) == 1
+    assert store.get("b") is not None
