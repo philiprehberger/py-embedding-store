@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0 (2026-06-15)
+
+- Add `VectorStore.score(id, query_embedding, metric=None)` to compute similarity between a stored entry and an arbitrary query vector without running a full top-k search
+- Add package-card image to README
+
 ## 0.4.0 (2026-05-30)
 
 - Add `VectorStore.update()` to modify an existing entry's vector or metadata in place

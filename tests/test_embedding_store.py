@@ -597,3 +597,52 @@ def test_clear_then_add_works():
     store.add("b", [0.5, 0.5, 0.5])
     assert len(store) == 1
     assert store.get("b") is not None
+
+
+# --- score() ---
+
+
+def test_score_cosine_identical_vectors():
+    store = VectorStore(metric="cosine")
+    store.add("a", [1.0, 0.0, 0.0])
+    assert store.score("a", [1.0, 0.0, 0.0]) == pytest.approx(1.0)
+
+
+def test_score_cosine_orthogonal():
+    store = VectorStore(metric="cosine")
+    store.add("a", [1.0, 0.0])
+    assert store.score("a", [0.0, 1.0]) == pytest.approx(0.0, abs=1e-6)
+
+
+def test_score_dot_product():
+    store = VectorStore(metric="dot")
+    store.add("a", [1.0, 2.0, 3.0])
+    assert store.score("a", [1.0, 1.0, 1.0]) == pytest.approx(6.0)
+
+
+def test_score_metric_override():
+    store = VectorStore(metric="cosine")
+    store.add("a", [1.0, 2.0, 3.0])
+    dot = store.score("a", [1.0, 1.0, 1.0], metric="dot")
+    assert dot == pytest.approx(6.0)
+
+
+def test_score_unknown_id_raises():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0])
+    with pytest.raises(KeyError):
+        store.score("missing", [1.0, 0.0])
+
+
+def test_score_dimension_mismatch_raises():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0, 0.0])
+    with pytest.raises(ValueError):
+        store.score("a", [1.0, 0.0])
+
+
+def test_score_unknown_metric_raises():
+    store = VectorStore()
+    store.add("a", [1.0, 0.0])
+    with pytest.raises(ValueError):
+        store.score("a", [1.0, 0.0], metric="bogus")

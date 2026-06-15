@@ -4,6 +4,8 @@
 [![PyPI version](https://img.shields.io/pypi/v/philiprehberger-embedding-store.svg)](https://pypi.org/project/philiprehberger-embedding-store/)
 [![Last updated](https://img.shields.io/github/last-commit/philiprehberger/py-embedding-store)](https://github.com/philiprehberger/py-embedding-store/commits/main)
 
+![philiprehberger-embedding-store](https://raw.githubusercontent.com/philiprehberger/py-embedding-store/main/package-card.webp)
+
 In-memory vector store with multi-metric similarity search.
 
 ## Installation
@@ -85,6 +87,21 @@ all_results = store.search_many(
 )
 ```
 
+### Score a single entry
+
+Use `score()` to compute the similarity between a stored entry and an arbitrary query vector without running a full top-k search — handy for re-ranking or one-off comparisons.
+
+```python
+from philiprehberger_embedding_store import VectorStore
+
+store = VectorStore(metric="cosine")
+store.add("doc1", [1.0, 0.0, 0.0])
+
+store.score("doc1", [1.0, 0.0, 0.0])              # 1.0
+store.score("doc1", [0.0, 1.0, 0.0])              # ~0.0
+store.score("doc1", [1.0, 1.0, 1.0], metric="dot")  # 1.0
+```
+
 ### Persistence
 
 ```python
@@ -144,6 +161,7 @@ store.add("b", [0.1, 0.2, 0.3])  # still constrained to 3 dimensions
 | `add_many(items)` | Batch add multiple vectors |
 | `search(query, top_k?, metric?, filter?, min_score?)` | Similarity search |
 | `search_many(queries, top_k?, metric?, filter?, min_score?)` | Batch similarity search |
+| `score(id, query, metric?)` | Compute similarity between a stored entry and a query vector |
 | `get(id)` | Get entry by ID |
 | `delete(id)` | Delete entry by ID |
 | `remove(id)` | Remove entry by ID (alias for delete) |

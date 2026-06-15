@@ -237,6 +237,53 @@ class VectorStore:
 
         return results
 
+    def score(
+        self,
+        id: str,
+        query_embedding: list[float] | np.ndarray,
+        metric: str | None = None,
+    ) -> float:
+        """Compute the similarity score between a stored entry and a query vector.
+
+        Useful for re-ranking or one-off comparisons without performing a
+        full top-k search.
+
+        Args:
+            id: Identifier of the stored entry.
+            query_embedding: Query vector.
+            metric: Distance metric override. Defaults to the store-level
+                metric set in the constructor.
+
+        Returns:
+            Similarity score under the chosen metric.
+
+        Raises:
+            KeyError: If *id* is not present in the store.
+            ValueError: If *metric* is unknown or *query_embedding* has the
+                wrong dimensionality.
+        """
+        entry = self._entries.get(id)
+        if entry is None:
+            raise KeyError(id)
+
+        effective_metric = metric or self._metric
+        if effective_metric not in _VALID_METRICS:
+            raise ValueError(
+                f"Unknown metric: {effective_metric!r}. "
+                f"Valid metrics: {', '.join(_VALID_METRICS)}"
+            )
+
+        query = np.asarray(query_embedding, dtype=np.float32)
+        if len(query) != len(entry.embedding):
+            raise ValueError(
+                f"Expected {len(entry.embedding)} dimensions, got {len(query)}"
+            )
+
+        scores = self._compute_scores(
+            query, entry.embedding.reshape(1, -1), effective_metric
+        )
+        return float(scores[0])
+
     def search_many(
         self,
         query_embeddings: list[list[float] | np.ndarray],
